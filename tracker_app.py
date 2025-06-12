@@ -10,6 +10,7 @@ def get_google_trends_data(keywords, timeframe):
     pytrends = TrendReq(hl='en-US', tz=540)
     pytrends.build_payload(keywords, cat=0, timeframe=timeframe, geo='JP', gprop='')
     return pytrends.interest_over_time()
+    
 # Axis
 st.sidebar.title("Settings")
 keywords = st.sidebar.multiselect(
@@ -25,7 +26,7 @@ timeframe = st.sidebar.selectbox(
 st.sidebar.write("Tip: Use Japanese keywords for Japanese trends!")
 
 # fetching google trends data
-st.header("1️⃣ Google Trends Data")
+st.header("Google Trends Data")
 pytrends = TrendReq(hl='en-US', tz=540)
 
 if len(keywords) == 0:
@@ -41,7 +42,7 @@ st.write("Sample Google Trends Data:")
 st.dataframe(interest_over_time_df.head())
 
 # fetch commodity price for crude oil
-st.header("2️⃣ Crude Oil Price Data")
+st.header("Crude Oil Price Data")
 oil_data = yf.download('CL=F', period=timeframe.split()[1], interval='1d')
 if oil_data.empty:
     st.error("Could not fetch oil price data.")
@@ -50,7 +51,7 @@ st.write("Sample Oil Price Data:")
 st.dataframe(oil_data[['Close']].head())
 
 # merging and cleaning data
-st.header("3️⃣ Merge & Clean Data")
+st.header("Merge & Clean Data")
 # converting google trends to fit business days to match market data
 trends = interest_over_time_df.resample('B').mean().fillna(method='ffill')
 merged_df = pd.merge(trends, oil_data['Close'], left_index=True, right_index=True)
@@ -59,7 +60,7 @@ st.write("Merged Data Sample:")
 st.dataframe(merged_df.head())
 
 # correlation analysis
-st.header("4️⃣ Correlation Analysis")
+st.header("Correlation Analysis")
 correlation = merged_df.corr()
 st.write("Correlation Matrix:")
 st.dataframe(correlation)
@@ -79,7 +80,7 @@ lag_df = pd.DataFrame(lag_results, index=[f"Lag {i}" for i in range(1, 8)])
 st.dataframe(lag_df)
 
 # visualizations
-st.header("5️⃣ Visualization")
+st.header("Visualization")
 
 st.subheader("Google Trends & Oil Price Over Time")
 for kw in keywords:
@@ -101,7 +102,7 @@ for kw in keywords:
     st.pyplot(fig)
 
 # option to download
-st.header("6️⃣ Download Merged Data")
+st.header("Download Merged Data")
 st.download_button(
     label="Download merged data as CSV",
     data=merged_df.to_csv().encode('utf-8'),
