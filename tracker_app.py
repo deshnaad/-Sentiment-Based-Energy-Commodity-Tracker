@@ -5,7 +5,7 @@ import seaborn as sns
 from pytrends.request import TrendReq
 import yfinance as yf
 
-# --- Sidebar: User Input ---
+# Axis
 st.sidebar.title("Settings")
 keywords = st.sidebar.multiselect(
     "Select Keywords (English/Japanese)", 
@@ -19,7 +19,7 @@ timeframe = st.sidebar.selectbox(
 )
 st.sidebar.write("Tip: Use Japanese keywords for Japanese trends!")
 
-# --- Step 1: Fetch Google Trends Data ---
+# fetching google trends data
 st.header("1️⃣ Google Trends Data")
 pytrends = TrendReq(hl='en-US', tz=540)
 
@@ -35,7 +35,7 @@ if interest_over_time_df.empty:
 st.write("Sample Google Trends Data:")
 st.dataframe(interest_over_time_df.head())
 
-# --- Step 2: Fetch Commodity Price Data (Crude Oil) ---
+# fetch commodity price for crude oil
 st.header("2️⃣ Crude Oil Price Data")
 oil_data = yf.download('CL=F', period=timeframe.split()[1], interval='1d')
 if oil_data.empty:
@@ -44,16 +44,16 @@ if oil_data.empty:
 st.write("Sample Oil Price Data:")
 st.dataframe(oil_data[['Close']].head())
 
-# --- Step 3: Merge and Clean Data ---
+# merging and cleaning data
 st.header("3️⃣ Merge & Clean Data")
-# Resample Google Trends to business days to match market data
+# converting google trends to fit business days to match market data
 trends = interest_over_time_df.resample('B').mean().fillna(method='ffill')
 merged_df = pd.merge(trends, oil_data['Close'], left_index=True, right_index=True)
 merged_df.rename(columns={'Close': 'Oil Price'}, inplace=True)
 st.write("Merged Data Sample:")
 st.dataframe(merged_df.head())
 
-# --- Step 4: Correlation Analysis ---
+# correlation analysis
 st.header("4️⃣ Correlation Analysis")
 correlation = merged_df.corr()
 st.write("Correlation Matrix:")
@@ -73,7 +73,7 @@ for kw in keywords:
 lag_df = pd.DataFrame(lag_results, index=[f"Lag {i}" for i in range(1, 8)])
 st.dataframe(lag_df)
 
-# --- Step 5: Visualization ---
+# visualizations
 st.header("5️⃣ Visualization")
 
 st.subheader("Google Trends & Oil Price Over Time")
@@ -95,7 +95,7 @@ for kw in keywords:
     plt.tight_layout()
     st.pyplot(fig)
 
-# --- Step 6: Download Option ---
+# option to download
 st.header("6️⃣ Download Merged Data")
 st.download_button(
     label="Download merged data as CSV",
