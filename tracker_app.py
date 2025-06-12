@@ -5,6 +5,11 @@ import seaborn as sns
 from pytrends.request import TrendReq
 import yfinance as yf
 
+@st.cache_data
+def get_google_trends_data(keywords, timeframe):
+    pytrends = TrendReq(hl='en-US', tz=540)
+    pytrends.build_payload(keywords, cat=0, timeframe=timeframe, geo='JP', gprop='')
+    return pytrends.interest_over_time()
 # Axis
 st.sidebar.title("Settings")
 keywords = st.sidebar.multiselect(
