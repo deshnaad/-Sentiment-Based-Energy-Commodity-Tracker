@@ -18,6 +18,7 @@ keywords = st.sidebar.multiselect(
     ["crude oil", "電気料金", "天然ガス", "LNG", "原油"], 
     default=["crude oil", "電気料金"]
 )
+
 timeframe = st.sidebar.selectbox(
     "Select Google Trends Timeframe", 
     ["today 3-m", "today 12-m", "today 5-y"], 
@@ -44,7 +45,15 @@ st.dataframe(interest_over_time_df.head())
 
 # fetch commodity price for crude oil
 st.header("Crude Oil Price Data")
-selected_period = timeframe_mapping.get(timeframe, "3mo")  # default to 3mo if not found
+
+# Mapping for yfinance periods
+timeframe_mapping = {
+    "today 3-m": "3mo",
+    "today 12-m": "12mo",
+    "today 5-y": "5y"
+}
+ # default time frame to 3mo if not found
+selected_period = timeframe_mapping.get(timeframe, "3mo") 
 oil_data = yf.download('CL=F', period=selected_period, interval='1d')
 if oil_data.empty:
     st.error("Could not fetch oil price data.")
