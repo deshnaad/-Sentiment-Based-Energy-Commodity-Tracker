@@ -26,6 +26,7 @@ timeframe = st.sidebar.selectbox(
 st.sidebar.write("Tip: Use Japanese keywords for Japanese trends!")
 
 # fetching google trends data
+
 st.header("Google Trends Data")
 pytrends = TrendReq(hl='en-US', tz=540)
 
@@ -43,7 +44,8 @@ st.dataframe(interest_over_time_df.head())
 
 # fetch commodity price for crude oil
 st.header("Crude Oil Price Data")
-oil_data = yf.download('CL=F', period=timeframe.split()[1], interval='1d')
+selected_period = timeframe_mapping.get(timeframe, "3mo")  # default to 3mo if not found
+oil_data = yf.download('CL=F', period=selected_period, interval='1d')
 if oil_data.empty:
     st.error("Could not fetch oil price data.")
     st.stop()
